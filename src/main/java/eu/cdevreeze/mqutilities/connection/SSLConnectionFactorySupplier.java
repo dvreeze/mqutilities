@@ -21,7 +21,6 @@ import com.ibm.msg.client.jakarta.jms.JmsFactoryFactory;
 import com.ibm.msg.client.jakarta.wmq.WMQConstants;
 import com.ibm.msg.client.jakarta.wmq.common.CommonConstants;
 import eu.cdevreeze.mqutilities.ConnectionFactorySupplier;
-import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSException;
 import jakarta.jms.JMSRuntimeException;
 
@@ -39,7 +38,7 @@ import java.util.Objects;
 public class SSLConnectionFactorySupplier implements ConnectionFactorySupplier {
 
     @Override
-    public ConnectionFactory get() {
+    public JmsConnectionFactory get() {
         try {
             String jakartaWmqProviderName = WMQConstants.JAKARTA_WMQ_PROVIDER;
             JmsFactoryFactory jmsFactoryFactory = JmsFactoryFactory.getInstance(jakartaWmqProviderName);

@@ -18,27 +18,27 @@ package eu.cdevreeze.mqutilities.console;
 
 import eu.cdevreeze.mqutilities.ConnectionFactorySupplier;
 import eu.cdevreeze.mqutilities.QueueCallback;
-import eu.cdevreeze.mqutilities.callback.GetMessageCount;
+import eu.cdevreeze.mqutilities.callback.SendTextMessage;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSContext;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 /**
- * Program that calls {@link eu.cdevreeze.mqutilities.callback.GetMessageCount} and shows the result.
+ * Program that calls {@link SendTextMessage} and shows the result.
  * <p>
- * The only program argument is the queue name. Other than that, system property
+ * The only program arguments are the queue name and message text. Other than that, system property
  * "ConnectionFactorySupplierClass" is required, whose instances may require their own required system
  * properties.
  *
  * @author Chris de Vreeze
  */
-public class ObtainMessageCount {
+public class TextMessageSender {
 
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Objects.checkIndex(0, args.length);
-        String queueName = args[0];
+    public static void main(String[] args) throws Exception {
+        Objects.checkIndex(1, args.length);
+        String queueName = args[0]; // e.g. DEV.QUEUE.1
+        String messageText = args[1];
 
         String fqcnOfCFSupplier = Objects.requireNonNull(System.getProperty("ConnectionFactorySupplierClass"));
 
@@ -48,13 +48,13 @@ public class ObtainMessageCount {
         ConnectionFactorySupplier cfSupplier = cfSupplierClass.getDeclaredConstructor().newInstance();
         ConnectionFactory cf = cfSupplier.get();
 
-        QueueCallback<Integer> getMessageCount = new GetMessageCount();
+        QueueCallback<String> sendTextMessage = new SendTextMessage(messageText);
 
-        int messageCount;
         try (JMSContext jmsContext = cf.createContext()) {
-            messageCount = getMessageCount.apply(jmsContext, queueName);
+            sendTextMessage.apply(jmsContext, queueName);
         }
 
-        System.out.printf("Queue '%s' currently has %d messages%n", queueName, messageCount);
+        System.out.printf("Just sent message to queue '%s'%n", queueName);
+        System.out.printf("Message sent:%n%s%n", messageText);
     }
 }

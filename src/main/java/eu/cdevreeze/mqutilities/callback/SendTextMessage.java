@@ -14,19 +14,31 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.mqutilities;
+package eu.cdevreeze.mqutilities.callback;
 
+import eu.cdevreeze.mqutilities.QueueCallback;
 import jakarta.jms.JMSContext;
-
-import java.util.function.BiFunction;
+import jakarta.jms.JMSProducer;
 
 /**
- * {@link java.util.function.BiFunction} taking a {@link jakarta.jms.JMSContext} and a queue name.
+ * {@link QueueCallback} that sends a {@link jakarta.jms.TextMessage} to a queue.
  *
  * @author Chris de Vreeze
  */
-public interface QueueCallback<T> extends BiFunction<JMSContext, String, T> {
+public class SendTextMessage implements QueueCallback<String> {
+
+    private final String text;
+
+    public SendTextMessage(String text) {
+        this.text = text;
+    }
 
     @Override
-    T apply(JMSContext jmsContext, String queueName);
+    public String apply(JMSContext jmsContext, String queueName) {
+        JMSProducer jmsProducer = jmsContext.createProducer();
+
+        jmsProducer.send(jmsContext.createQueue(queueName), text);
+
+        return text;
+    }
 }
