@@ -70,6 +70,13 @@
             <artifactId>yaidom4j</artifactId>
             <version>0.13.1</version>
         </dependency>
+        <!-- Scope runtime -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.json</artifactId>
+            <version>2.0.1</version>
+            <scope>runtime</scope>
+        </dependency>
         <!-- For tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
