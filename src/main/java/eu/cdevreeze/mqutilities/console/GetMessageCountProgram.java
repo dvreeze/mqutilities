@@ -16,30 +16,26 @@
 
 package eu.cdevreeze.mqutilities.console;
 
-import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessageFromFile;
-import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessageFromFileFactory;
+import eu.cdevreeze.mqutilities.jmscontextfunction.GetMessageCountFactory;
 
-import java.nio.file.Path;
 import java.util.Objects;
 
 /**
- * Program that calls {@link SendTextMessageFromFile} and shows the result.
+ * Program that calls {@link eu.cdevreeze.mqutilities.jmscontextfunction.GetMessageCount} and shows the result.
  * <p>
- * The only program arguments are the queue name and message text file path.
+ * The only program argument is the queue name.
  *
  * @author Chris de Vreeze
  */
-public class FileBasedTextMessageSender {
+public class GetMessageCountProgram {
 
     public static void main(String... args) throws Exception {
-        Objects.checkIndex(1, args.length);
+        Objects.checkIndex(0, args.length);
         String queueName = args[0]; // e.g. DEV.QUEUE.1
-        Path file = Path.of(args[1]);
 
         JmsProgramReturningJson.main(
-                SendTextMessageFromFileFactory.class.getCanonicalName(),
-                queueName,
-                file.toString()
+                GetMessageCountFactory.class.getCanonicalName(),
+                queueName
         );
     }
 }

@@ -16,26 +16,29 @@
 
 package eu.cdevreeze.mqutilities.console;
 
-import eu.cdevreeze.mqutilities.jmscontextfunction.GetMessageCountFactory;
+import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessage;
+import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessageFactory;
 
 import java.util.Objects;
 
 /**
- * Program that calls {@link eu.cdevreeze.mqutilities.jmscontextfunction.GetMessageCount} and shows the result.
+ * Program that calls {@link SendTextMessage} and shows the result.
  * <p>
- * The only program argument is the queue name.
+ * The only program arguments are the queue name and message text.
  *
  * @author Chris de Vreeze
  */
-public class MessageCountRetriever {
+public class SendTextMessageProgram {
 
-    public static void main(String... args) throws Exception {
-        Objects.checkIndex(0, args.length);
+    public static void main(String[] args) throws Exception {
+        Objects.checkIndex(1, args.length);
         String queueName = args[0]; // e.g. DEV.QUEUE.1
+        String messageText = args[1];
 
         JmsProgramReturningJson.main(
-                GetMessageCountFactory.class.getCanonicalName(),
-                queueName
+                SendTextMessageFactory.class.getCanonicalName(),
+                queueName,
+                messageText
         );
     }
 }
