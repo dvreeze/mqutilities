@@ -25,5 +25,6 @@ import java.util.function.Function;
  *
  * @author Chris de Vreeze
  */
+@FunctionalInterface
 public interface JmsContextFunction<T> extends Function<JMSContext, T> {
 }

@@ -25,6 +25,7 @@ import java.util.List;
  *
  * @author Chris de Vreeze
  */
+@FunctionalInterface
 public interface JmsContextToJsonObjectFunctionFactory extends JmsContextFunctionFactory<JsonObject> {
 
     @Override

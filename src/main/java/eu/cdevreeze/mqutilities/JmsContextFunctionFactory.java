@@ -24,6 +24,7 @@ import java.util.function.Function;
  *
  * @author Chris de Vreeze
  */
+@FunctionalInterface
 public interface JmsContextFunctionFactory<T> extends Function<List<String>, JmsContextFunction<T>> {
 
     @Override

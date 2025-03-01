@@ -25,5 +25,6 @@ import java.util.function.Supplier;
  *
  * @author Chris de Vreeze
  */
+@FunctionalInterface
 public interface ConnectionFactorySupplier extends Supplier<ConnectionFactory> {
 }

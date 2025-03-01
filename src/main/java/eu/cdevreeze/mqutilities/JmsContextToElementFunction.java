@@ -23,5 +23,6 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Element;
  *
  * @author Chris de Vreeze
  */
+@FunctionalInterface
 public interface JmsContextToElementFunction extends JmsContextFunction<Element> {
 }

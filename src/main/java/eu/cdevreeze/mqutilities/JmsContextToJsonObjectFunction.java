@@ -23,5 +23,6 @@ import jakarta.json.JsonObject;
  *
  * @author Chris de Vreeze
  */
+@FunctionalInterface
 public interface JmsContextToJsonObjectFunction extends JmsContextFunction<JsonObject> {
 }
