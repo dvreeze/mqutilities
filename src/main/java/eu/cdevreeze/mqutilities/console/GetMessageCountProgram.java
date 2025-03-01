@@ -16,12 +16,13 @@
 
 package eu.cdevreeze.mqutilities.console;
 
+import eu.cdevreeze.mqutilities.jmscontextfunction.GetMessageCount;
 import eu.cdevreeze.mqutilities.jmscontextfunction.GetMessageCountFactory;
 
 import java.util.Objects;
 
 /**
- * Program that calls {@link eu.cdevreeze.mqutilities.jmscontextfunction.GetMessageCount} and shows the result.
+ * Program that calls {@link GetMessageCount} and shows the result.
  * <p>
  * The only program argument is the queue name.
  *
