@@ -14,33 +14,38 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.mqutilities.callback;
+package eu.cdevreeze.mqutilities.jmscontextfunction;
 
-import eu.cdevreeze.mqutilities.QueueCallback;
+import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunction;
 import jakarta.jms.JMSContext;
 import jakarta.jms.JMSProducer;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
 /**
- * {@link QueueCallback} that sends a {@link jakarta.jms.TextMessage} to a queue, where
+ * {@link JmsContextToJsonObjectFunction} that sends a {@link jakarta.jms.TextMessage} to a queue, where
  * the message is read from a file.
  *
  * @author Chris de Vreeze
  */
-public class SendTextMessageFromFile implements QueueCallback<String> {
+public class SendTextMessageFromFile implements JmsContextToJsonObjectFunction {
 
+    private final String queueName;
     private final Path file;
 
-    public SendTextMessageFromFile(Path file) {
+    public SendTextMessageFromFile(String queueName, Path file) {
+        this.queueName = queueName;
         this.file = file;
     }
 
     @Override
-    public String apply(JMSContext jmsContext, String queueName) {
+    public JsonObject apply(JMSContext jmsContext) {
         String messageText = null;
         try {
             messageText = Files.readString(file);
@@ -52,6 +57,11 @@ public class SendTextMessageFromFile implements QueueCallback<String> {
 
         jmsProducer.send(jmsContext.createQueue(queueName), messageText);
 
-        return messageText;
+        return Json.createObjectBuilder(
+                Map.of(
+                        "queue", queueName,
+                        "message", String.valueOf(messageText)
+                )
+        ).build();
     }
 }

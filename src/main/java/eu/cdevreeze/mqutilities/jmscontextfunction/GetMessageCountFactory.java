@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.mqutilities;
+package eu.cdevreeze.mqutilities.jmscontextfunction;
 
-import jakarta.json.JsonObject;
+import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunctionFactory;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
- * {@link QueueCallback} taking JSON as constructor input and returning JSON as well.
- * <p>
- * Each implementation of this interface is expected to have a one-parameter constructor taking
- * a {@link JsonObject} as input.
+ * Factory of {@link GetMessageCount} objects.
  *
  * @author Chris de Vreeze
  */
-public interface QueueCallbackReturningJson extends QueueCallback<JsonObject> {
+public class GetMessageCountFactory implements JmsContextToJsonObjectFunctionFactory {
 
-    JsonObject getConstructorInput();
+    @Override
+    public GetMessageCount apply(List<String> args) {
+        Objects.checkIndex(0, args.size());
+        String queueName = Objects.requireNonNull(args.get(0));
+        return new GetMessageCount(queueName);
+    }
 }

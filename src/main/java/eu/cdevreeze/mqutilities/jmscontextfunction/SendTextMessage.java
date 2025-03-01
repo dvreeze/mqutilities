@@ -14,31 +14,42 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.mqutilities.callback;
+package eu.cdevreeze.mqutilities.jmscontextfunction;
 
-import eu.cdevreeze.mqutilities.QueueCallback;
+import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunction;
 import jakarta.jms.JMSContext;
 import jakarta.jms.JMSProducer;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+
+import java.util.Map;
 
 /**
- * {@link QueueCallback} that sends a {@link jakarta.jms.TextMessage} to a queue.
+ * {@link JmsContextToJsonObjectFunction} that sends a {@link jakarta.jms.TextMessage} to a queue.
  *
  * @author Chris de Vreeze
  */
-public class SendTextMessage implements QueueCallback<String> {
+public class SendTextMessage implements JmsContextToJsonObjectFunction {
 
+    private final String queueName;
     private final String text;
 
-    public SendTextMessage(String text) {
+    public SendTextMessage(String queueName, String text) {
+        this.queueName = queueName;
         this.text = text;
     }
 
     @Override
-    public String apply(JMSContext jmsContext, String queueName) {
+    public JsonObject apply(JMSContext jmsContext) {
         JMSProducer jmsProducer = jmsContext.createProducer();
 
         jmsProducer.send(jmsContext.createQueue(queueName), text);
 
-        return text;
+        return Json.createObjectBuilder(
+                Map.of(
+                        "queue", queueName,
+                        "message", String.valueOf(text)
+                )
+        ).build();
     }
 }

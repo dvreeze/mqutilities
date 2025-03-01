@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.mqutilities;
+package eu.cdevreeze.mqutilities.jmscontextfunction;
 
-import jakarta.jms.JMSContext;
+import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunctionFactory;
 
-import java.util.function.BiFunction;
+import java.util.List;
+import java.util.Objects;
 
 /**
- * {@link java.util.function.BiFunction} taking a {@link jakarta.jms.JMSContext} and a queue name.
+ * Factory of {@link SendTextMessage} objects.
  *
  * @author Chris de Vreeze
  */
-public interface QueueCallback<T> extends BiFunction<JMSContext, String, T> {
+public class SendTextMessageFactory implements JmsContextToJsonObjectFunctionFactory {
 
     @Override
-    T apply(JMSContext jmsContext, String queueName);
+    public SendTextMessage apply(List<String> args) {
+        Objects.checkIndex(1, args.size());
+        String queueName = Objects.requireNonNull(args.get(0));
+        String text = Objects.requireNonNull(args.get(1));
+        return new SendTextMessage(queueName, text);
+    }
 }

@@ -14,29 +14,43 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.mqutilities.callback;
+package eu.cdevreeze.mqutilities.jmscontextfunction;
 
-import eu.cdevreeze.mqutilities.QueueCallback;
+import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunction;
 import jakarta.jms.*;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 
 /**
- * {@link QueueCallback} that returns the number of messages on the given queue, without
+ * {@link JmsContextToJsonObjectFunction} that returns the number of messages on the given queue, without
  * consuming any data.
  *
  * @author Chris de Vreeze
  */
-public class GetMessageCount implements QueueCallback<Integer> {
+public class GetMessageCount implements JmsContextToJsonObjectFunction {
+
+    private final String queueName;
+
+    public GetMessageCount(String queueName) {
+        this.queueName = queueName;
+    }
 
     @Override
-    public Integer apply(JMSContext jmsContext, String queueName) {
+    public JsonObject apply(JMSContext jmsContext) {
         try (QueueBrowser queueBrowser = jmsContext.createBrowser(jmsContext.createQueue(queueName))) {
             @SuppressWarnings("unchecked")
             List<Message> messages = Collections.list((Enumeration<Message>) queueBrowser.getEnumeration());
-            return messages.size();
+            return Json.createObjectBuilder(
+                    Map.of(
+                            "queue", queueName,
+                            "messageCount", String.valueOf(messages.size())
+                    )
+            ).build();
         } catch (JMSException e) {
             throw new JMSRuntimeException(e.getMessage(), e.getErrorCode(), e);
         }

@@ -17,7 +17,8 @@
 package eu.cdevreeze.mqutilities.console;
 
 import eu.cdevreeze.mqutilities.ConnectionFactorySupplier;
-import eu.cdevreeze.mqutilities.QueueCallbackReturningJson;
+import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunction;
+import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunctionFactory;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSContext;
 import jakarta.json.Json;
@@ -25,32 +26,25 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
-import jakarta.json.stream.JsonParser;
 
-import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
- * Console program using a {@link QueueCallbackReturningJson}. The first program argument
- * is a queue name, the second one is the fully-qualified class name of the {@link QueueCallbackReturningJson},
- * and the third one is a JSON string that acts as input for the constructor of the
- * {@link QueueCallbackReturningJson}.
+ * Console program using a {@link JmsContextToJsonObjectFunction}. The first program argument
+ * is the fully-qualified class name of the {@link JmsContextToJsonObjectFunctionFactory},
+ * and the remaining program arguments are passed to the {@link JmsContextToJsonObjectFunctionFactory}
+ * to create a {@link JmsContextToJsonObjectFunction}, which is subsequently run.
  *
  * @author Chris de Vreeze
  */
 public class JmsProgramReturningJson {
 
-    public static void main(String[] args) throws Exception {
-        Objects.checkIndex(2, args.length);
-        String queueName = args[0]; // e.g. DEV.QUEUE.1
-        String fqcnOfQueueCallback = args[1];
-        JsonObject constructorInput;
-        try (JsonParser parser = Json.createParser(new StringReader(args[2]))) {
-            constructorInput = parser.getObject();
-        }
+    public static void main(String... args) throws Exception {
+        Objects.checkIndex(0, args.length);
+        String fqcnOfFactory = args[0];
+        // The remaining arguments typically include a queue name, such as DEV.QUEUE.1
+        List<String> factoryArgs = Arrays.stream(args).skip(1).toList();
 
         String fqcnOfCFSupplier = Objects.requireNonNull(System.getProperty("ConnectionFactorySupplierClass"));
 
@@ -61,14 +55,18 @@ public class JmsProgramReturningJson {
         ConnectionFactory cf = cfSupplier.get();
 
         @SuppressWarnings("unchecked")
-        Class<QueueCallbackReturningJson> callbackClass = (Class<QueueCallbackReturningJson>) Class.forName(fqcnOfQueueCallback);
+        Class<JmsContextToJsonObjectFunctionFactory> factoryClass =
+                (Class<JmsContextToJsonObjectFunctionFactory>) Class.forName(fqcnOfFactory);
 
-        QueueCallbackReturningJson callback = callbackClass.getDeclaredConstructor(JsonObject.class)
-                .newInstance(constructorInput);
+        JmsContextToJsonObjectFunctionFactory factory = factoryClass.getDeclaredConstructor()
+                .newInstance();
 
+        JmsContextToJsonObjectFunction function = factory.apply(factoryArgs);
+
+        // Do the actual work within a JMSContext
         JsonObject result;
         try (JMSContext jmsContext = cf.createContext()) {
-            result = callback.apply(jmsContext, queueName);
+            result = function.apply(jmsContext);
         }
 
         StringWriter sw = new StringWriter();

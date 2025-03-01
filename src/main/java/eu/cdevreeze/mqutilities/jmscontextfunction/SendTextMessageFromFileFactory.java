@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.mqutilities.console;
+package eu.cdevreeze.mqutilities.jmscontextfunction;
 
-import eu.cdevreeze.mqutilities.jmscontextfunction.GetMessageCountFactory;
+import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunctionFactory;
 
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * Program that calls {@link eu.cdevreeze.mqutilities.jmscontextfunction.GetMessageCount} and shows the result.
- * <p>
- * The only program argument is the queue name.
+ * Factory of {@link SendTextMessageFromFile} objects.
  *
  * @author Chris de Vreeze
  */
-public class MessageCountRetriever {
+public class SendTextMessageFromFileFactory implements JmsContextToJsonObjectFunctionFactory {
 
-    public static void main(String... args) throws Exception {
-        Objects.checkIndex(0, args.length);
-        String queueName = args[0]; // e.g. DEV.QUEUE.1
-
-        JmsProgramReturningJson.main(
-                GetMessageCountFactory.class.getCanonicalName(),
-                queueName
-        );
+    @Override
+    public SendTextMessageFromFile apply(List<String> args) {
+        Objects.checkIndex(1, args.size());
+        String queueName = Objects.requireNonNull(args.get(0));
+        Path file = Path.of(Objects.requireNonNull(args.get(1)));
+        return new SendTextMessageFromFile(queueName, file);
     }
 }

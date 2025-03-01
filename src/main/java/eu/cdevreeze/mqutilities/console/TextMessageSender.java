@@ -16,20 +16,15 @@
 
 package eu.cdevreeze.mqutilities.console;
 
-import eu.cdevreeze.mqutilities.ConnectionFactorySupplier;
-import eu.cdevreeze.mqutilities.QueueCallback;
-import eu.cdevreeze.mqutilities.callback.SendTextMessage;
-import jakarta.jms.ConnectionFactory;
-import jakarta.jms.JMSContext;
+import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessage;
+import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessageFactory;
 
 import java.util.Objects;
 
 /**
  * Program that calls {@link SendTextMessage} and shows the result.
  * <p>
- * The only program arguments are the queue name and message text. Other than that, system property
- * "ConnectionFactorySupplierClass" is required, whose instances may require their own required system
- * properties.
+ * The only program arguments are the queue name and message text.
  *
  * @author Chris de Vreeze
  */
@@ -40,21 +35,10 @@ public class TextMessageSender {
         String queueName = args[0]; // e.g. DEV.QUEUE.1
         String messageText = args[1];
 
-        String fqcnOfCFSupplier = Objects.requireNonNull(System.getProperty("ConnectionFactorySupplierClass"));
-
-        @SuppressWarnings("unchecked")
-        Class<ConnectionFactorySupplier> cfSupplierClass = (Class<ConnectionFactorySupplier>) Class.forName(fqcnOfCFSupplier);
-
-        ConnectionFactorySupplier cfSupplier = cfSupplierClass.getDeclaredConstructor().newInstance();
-        ConnectionFactory cf = cfSupplier.get();
-
-        QueueCallback<String> sendTextMessage = new SendTextMessage(messageText);
-
-        try (JMSContext jmsContext = cf.createContext()) {
-            sendTextMessage.apply(jmsContext, queueName);
-        }
-
-        System.out.printf("Just sent message to queue '%s'%n", queueName);
-        System.out.printf("Message sent:%n%s%n", messageText);
+        JmsProgramReturningJson.main(
+                SendTextMessageFactory.class.getCanonicalName(),
+                queueName,
+                messageText
+        );
     }
 }

@@ -16,11 +16,8 @@
 
 package eu.cdevreeze.mqutilities.console;
 
-import eu.cdevreeze.mqutilities.ConnectionFactorySupplier;
-import eu.cdevreeze.mqutilities.QueueCallback;
-import eu.cdevreeze.mqutilities.callback.SendTextMessageFromFile;
-import jakarta.jms.ConnectionFactory;
-import jakarta.jms.JMSContext;
+import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessageFromFile;
+import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessageFromFileFactory;
 
 import java.nio.file.Path;
 import java.util.Objects;
@@ -28,35 +25,21 @@ import java.util.Objects;
 /**
  * Program that calls {@link SendTextMessageFromFile} and shows the result.
  * <p>
- * The only program arguments are the queue name and message text file path. Other than that, system property
- * "ConnectionFactorySupplierClass" is required, whose instances may require their own required system
- * properties.
+ * The only program arguments are the queue name and message text file path.
  *
  * @author Chris de Vreeze
  */
 public class FileBasedTextMessageSender {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String... args) throws Exception {
         Objects.checkIndex(1, args.length);
         String queueName = args[0]; // e.g. DEV.QUEUE.1
-        Path messageFile = Path.of(args[1]);
+        Path file = Path.of(args[1]);
 
-        String fqcnOfCFSupplier = Objects.requireNonNull(System.getProperty("ConnectionFactorySupplierClass"));
-
-        @SuppressWarnings("unchecked")
-        Class<ConnectionFactorySupplier> cfSupplierClass = (Class<ConnectionFactorySupplier>) Class.forName(fqcnOfCFSupplier);
-
-        ConnectionFactorySupplier cfSupplier = cfSupplierClass.getDeclaredConstructor().newInstance();
-        ConnectionFactory cf = cfSupplier.get();
-
-        QueueCallback<String> sendTextMessageFromFile = new SendTextMessageFromFile(messageFile);
-
-        String messageText;
-        try (JMSContext jmsContext = cf.createContext()) {
-            messageText = sendTextMessageFromFile.apply(jmsContext, queueName);
-        }
-
-        System.out.printf("Just sent message to queue '%s'%n", queueName);
-        System.out.printf("Message sent:%n%s%n", messageText);
+        JmsProgramReturningJson.main(
+                SendTextMessageFromFileFactory.class.getCanonicalName(),
+                queueName,
+                file.toString()
+        );
     }
 }
