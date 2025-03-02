@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.mqutilities.jmscontextfunction;
+package eu.cdevreeze.mqutilities.connection;
 
-import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunctionFactory;
+import eu.cdevreeze.mqutilities.qualifier.connection.SimpleConnection;
 import jakarta.enterprise.context.ApplicationScoped;
-
-import java.util.List;
-import java.util.Objects;
+import jakarta.enterprise.inject.Produces;
+import jakarta.jms.ConnectionFactory;
 
 /**
- * Factory of {@link GetMessageCount} objects.
+ * CDI-injectable "simple" JMS {@link ConnectionFactory}.
  *
  * @author Chris de Vreeze
  */
 @ApplicationScoped
-public class GetMessageCountFactory implements JmsContextToJsonObjectFunctionFactory {
+public class SimpleConnectionFactories {
 
-    @Override
-    public GetMessageCount apply(List<String> args) {
-        Objects.checkIndex(0, args.size());
-        String queueName = Objects.requireNonNull(args.get(0));
-        return new GetMessageCount(queueName);
+    @Produces
+    @SimpleConnection
+    @ApplicationScoped
+    public ConnectionFactory getConnectionFactory() {
+        return new SimpleConnectionFactorySupplier().get();
     }
 }

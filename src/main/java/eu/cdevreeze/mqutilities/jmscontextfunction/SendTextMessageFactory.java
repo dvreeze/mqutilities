@@ -17,6 +17,7 @@
 package eu.cdevreeze.mqutilities.jmscontextfunction;
 
 import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunctionFactory;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +27,7 @@ import java.util.Objects;
  *
  * @author Chris de Vreeze
  */
+@ApplicationScoped
 public class SendTextMessageFactory implements JmsContextToJsonObjectFunctionFactory {
 
     @Override

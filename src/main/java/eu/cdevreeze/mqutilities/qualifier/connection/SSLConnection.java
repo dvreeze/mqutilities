@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.mqutilities.jmscontextfunction;
+package eu.cdevreeze.mqutilities.qualifier.connection;
 
-import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunctionFactory;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Qualifier;
 
-import java.util.List;
-import java.util.Objects;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Factory of {@link GetMessageCount} objects.
+ * CDI {@link Qualifier} for {@link jakarta.jms.ConnectionFactory} instances that use 2-way SSL.
  *
  * @author Chris de Vreeze
  */
-@ApplicationScoped
-public class GetMessageCountFactory implements JmsContextToJsonObjectFunctionFactory {
-
-    @Override
-    public GetMessageCount apply(List<String> args) {
-        Objects.checkIndex(0, args.size());
-        String queueName = Objects.requireNonNull(args.get(0));
-        return new GetMessageCount(queueName);
-    }
+@Qualifier
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SSLConnection {
 }
