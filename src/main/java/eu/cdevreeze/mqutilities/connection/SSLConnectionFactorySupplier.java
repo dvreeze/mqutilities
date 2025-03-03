@@ -20,14 +20,15 @@ import com.ibm.msg.client.jakarta.jms.JmsConnectionFactory;
 import com.ibm.msg.client.jakarta.jms.JmsFactoryFactory;
 import com.ibm.msg.client.jakarta.wmq.WMQConstants;
 import com.ibm.msg.client.jakarta.wmq.common.CommonConstants;
-import eu.cdevreeze.mqutilities.ConnectionFactorySupplier;
+import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSException;
 import jakarta.jms.JMSRuntimeException;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
- * {@link ConnectionFactorySupplier} using 2-way SSL.
+ * {@link Supplier<ConnectionFactory>} using 2-way SSL.
  * <p>
  * The configuration settings of the returned {@link jakarta.jms.ConnectionFactory} are taken
  * from system properties (with the same names as the corresponding constants in
@@ -35,7 +36,7 @@ import java.util.Objects;
  *
  * @author Chris de Vreeze
  */
-public class SSLConnectionFactorySupplier implements ConnectionFactorySupplier {
+public class SSLConnectionFactorySupplier implements Supplier<ConnectionFactory> {
 
     @Override
     public JmsConnectionFactory get() {

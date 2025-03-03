@@ -61,6 +61,7 @@ public class JmsProgramReturningJson {
         try (WeldContainer weldContainer = weld.initialize()) {
             Config config = ConfigProvider.getConfig();
 
+            // Typically, system property "connectionType" has been passed to the program
             ConnectionType connectionType =
                     ConnectionType.parse(config.getConfigValue("connectionType").getValue());
 

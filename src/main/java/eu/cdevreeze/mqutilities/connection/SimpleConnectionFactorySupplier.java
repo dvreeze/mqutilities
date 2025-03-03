@@ -20,12 +20,14 @@ import com.ibm.msg.client.jakarta.jms.JmsConnectionFactory;
 import com.ibm.msg.client.jakarta.jms.JmsFactoryFactory;
 import com.ibm.msg.client.jakarta.wmq.WMQConstants;
 import com.ibm.msg.client.jakarta.wmq.common.CommonConstants;
-import eu.cdevreeze.mqutilities.ConnectionFactorySupplier;
+import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSException;
 import jakarta.jms.JMSRuntimeException;
 
+import java.util.function.Supplier;
+
 /**
- * Simple {@link ConnectionFactorySupplier} using password authentication.
+ * Simple {@link Supplier<ConnectionFactory>} using password authentication.
  * <p>
  * The configuration settings of the returned {@link jakarta.jms.ConnectionFactory} are taken
  * from system properties (with the same names as the corresponding constants in
@@ -34,7 +36,7 @@ import jakarta.jms.JMSRuntimeException;
  *
  * @author Chris de Vreeze
  */
-public final class SimpleConnectionFactorySupplier implements ConnectionFactorySupplier {
+public final class SimpleConnectionFactorySupplier implements Supplier<ConnectionFactory> {
 
     @Override
     public JmsConnectionFactory get() {
