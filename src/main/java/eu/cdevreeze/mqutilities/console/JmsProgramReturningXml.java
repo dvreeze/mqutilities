@@ -66,6 +66,11 @@ public class JmsProgramReturningXml {
             Annotation connectionQualifier = new HasConnectionTypeQualifier(connectionType);
             Instance<ConnectionFactory> cfInstance = CDI.current().select(ConnectionFactory.class, connectionQualifier);
 
+            Preconditions.checkArgument(
+                    cfInstance.isResolvable(),
+                    String.format("Could not resolve ConnectionFactory with required qualifier '%s'", connectionQualifier)
+            );
+
             Instance<JmsContextToElementFunctionFactory> functionFactoryInstance =
                     CDI.current().select(JmsContextToElementFunctionFactory.class, NamedLiteral.of(jmsContextFunctionName));
 

@@ -67,6 +67,11 @@ public class JmsProgramReturningJson {
             Annotation connectionQualifier = new HasConnectionTypeQualifier(connectionType);
             Instance<ConnectionFactory> cfInstance = CDI.current().select(ConnectionFactory.class, connectionQualifier);
 
+            Preconditions.checkArgument(
+                    cfInstance.isResolvable(),
+                    String.format("Could not resolve ConnectionFactory with required qualifier '%s'", connectionQualifier)
+            );
+
             Instance<JmsContextToJsonObjectFunctionFactory> functionFactoryInstance =
                     CDI.current().select(JmsContextToJsonObjectFunctionFactory.class, NamedLiteral.of(jmsContextFunctionName));
 
