@@ -16,7 +16,8 @@
 
 package eu.cdevreeze.mqutilities.connection;
 
-import eu.cdevreeze.mqutilities.qualifier.connection.SimpleConnection;
+import eu.cdevreeze.mqutilities.qualifier.connection.ConnectionType;
+import eu.cdevreeze.mqutilities.qualifier.connection.HasConnectionType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.jms.ConnectionFactory;
@@ -30,7 +31,7 @@ import jakarta.jms.ConnectionFactory;
 public class SimpleConnectionFactories {
 
     @Produces
-    @SimpleConnection
+    @HasConnectionType(ConnectionType.SIMPLE)
     @ApplicationScoped
     public ConnectionFactory getConnectionFactory() {
         return new SimpleConnectionFactorySupplier().get();

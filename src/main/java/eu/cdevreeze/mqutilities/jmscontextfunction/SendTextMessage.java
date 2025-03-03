@@ -26,6 +26,8 @@ import java.util.Map;
 
 /**
  * {@link JmsContextToJsonObjectFunction} that sends a {@link jakarta.jms.TextMessage} to a queue.
+ * <p>
+ * Instances are created by a dedicated factory object, and not by CDI injection.
  *
  * @author Chris de Vreeze
  */

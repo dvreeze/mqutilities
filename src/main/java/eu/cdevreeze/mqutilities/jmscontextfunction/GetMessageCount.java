@@ -29,6 +29,8 @@ import java.util.Map;
 /**
  * {@link JmsContextToJsonObjectFunction} that returns the number of messages on the given queue, without
  * consuming any data.
+ * <p>
+ * Instances are created by a dedicated factory object, and not by CDI injection.
  *
  * @author Chris de Vreeze
  */

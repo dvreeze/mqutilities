@@ -34,6 +34,8 @@ import static eu.cdevreeze.yaidom4j.dom.immutabledom.Nodes.elem;
 /**
  * {@link JmsContextToElementFunction} that returns all (text) message payloads on the given queue, without
  * consuming any data. The text message payloads are returned as CDATA sections.
+ * <p>
+ * Instances are created by a dedicated factory object, and not by CDI injection.
  *
  * @author Chris de Vreeze
  */

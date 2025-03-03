@@ -17,7 +17,6 @@
 package eu.cdevreeze.mqutilities.console;
 
 import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessage;
-import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessageFactory;
 
 import java.util.Objects;
 
@@ -36,7 +35,7 @@ public class SendTextMessageProgram {
         String messageText = args[1];
 
         JmsProgramReturningJson.main(
-                SendTextMessageFactory.class.getCanonicalName(),
+                SendTextMessage.class.getSimpleName(),
                 queueName,
                 messageText
         );

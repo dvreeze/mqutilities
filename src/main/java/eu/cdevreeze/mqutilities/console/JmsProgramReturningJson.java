@@ -16,14 +16,14 @@
 
 package eu.cdevreeze.mqutilities.console;
 
+import com.google.common.base.Preconditions;
 import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunction;
 import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunctionFactory;
-import eu.cdevreeze.mqutilities.qualifier.connection.SSLConnection;
-import eu.cdevreeze.mqutilities.qualifier.connection.SimpleConnection;
-import jakarta.enterprise.inject.Any;
+import eu.cdevreeze.mqutilities.qualifier.connection.ConnectionType;
+import eu.cdevreeze.mqutilities.qualifier.connection.HasConnectionTypeQualifier;
 import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.literal.NamedLiteral;
 import jakarta.enterprise.inject.spi.CDI;
-import jakarta.enterprise.util.AnnotationLiteral;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSContext;
 import jakarta.json.Json;
@@ -31,6 +31,8 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
@@ -40,7 +42,7 @@ import java.util.*;
 
 /**
  * Console program using a {@link JmsContextToJsonObjectFunction}. The first program argument
- * is the fully-qualified class name of the {@link JmsContextToJsonObjectFunctionFactory},
+ * is the name of the {@link JmsContextToJsonObjectFunction} to create and run,
  * and the remaining program arguments are passed to the {@link JmsContextToJsonObjectFunctionFactory}
  * to create a {@link JmsContextToJsonObjectFunction}, which is subsequently run.
  *
@@ -50,28 +52,30 @@ public class JmsProgramReturningJson {
 
     public static void main(String... args) {
         Objects.checkIndex(0, args.length);
-        String fqcnOfFactory = args[0];
+        String jmsContextFunctionName = args[0];
         // The remaining arguments typically include a queue name, such as DEV.QUEUE.1
         List<String> factoryArgs = Arrays.stream(args).skip(1).toList();
 
         Weld weld = new Weld();
 
         try (WeldContainer weldContainer = weld.initialize()) {
-            // Config config = ConfigProvider.getConfig();
+            Config config = ConfigProvider.getConfig();
 
-            Annotation connectionQualifier = getConnectionQualifier();
+            ConnectionType connectionType =
+                    ConnectionType.parse(config.getConfigValue("connectionType").getValue());
+
+            Annotation connectionQualifier = new HasConnectionTypeQualifier(connectionType);
             Instance<ConnectionFactory> cfInstance = CDI.current().select(ConnectionFactory.class, connectionQualifier);
 
             Instance<JmsContextToJsonObjectFunctionFactory> functionFactoryInstance =
-                    CDI.current().select(JmsContextToJsonObjectFunctionFactory.class, Any.Literal.INSTANCE);
+                    CDI.current().select(JmsContextToJsonObjectFunctionFactory.class, NamedLiteral.of(jmsContextFunctionName));
 
-            JmsContextToJsonObjectFunctionFactory functionFactory = functionFactoryInstance
-                    .stream()
-                    .filter(factory -> factoryNameMatches(factory, fqcnOfFactory))
-                    .findFirst()
-                    .orElseThrow();
+            Preconditions.checkArgument(
+                    functionFactoryInstance.isResolvable(),
+                    String.format("Could not resolve function with name '%s'", jmsContextFunctionName)
+            );
 
-            JmsContextToJsonObjectFunction function = functionFactory.apply(factoryArgs);
+            JmsContextToJsonObjectFunction function = functionFactoryInstance.get().apply(factoryArgs);
 
             // Do the actual work within a JMSContext
             JsonObject result;
@@ -89,29 +93,6 @@ public class JmsProgramReturningJson {
             String resultAsString = sw.toString();
 
             System.out.println(resultAsString);
-        }
-    }
-
-    // TODO Improve. These are hacks
-
-    private static boolean factoryNameMatches(
-            JmsContextToJsonObjectFunctionFactory factory,
-            String fqcnOfFactory
-    ) {
-        try {
-            return factory.getClass().getSimpleName().startsWith(Class.forName(fqcnOfFactory).getSimpleName());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static Annotation getConnectionQualifier() {
-        if (Optional.ofNullable(System.getProperty("javax.net.ssl.keyStore")).isPresent()) {
-            return new AnnotationLiteral<SSLConnection>() {
-            };
-        } else {
-            return new AnnotationLiteral<SimpleConnection>() {
-            };
         }
     }
 }

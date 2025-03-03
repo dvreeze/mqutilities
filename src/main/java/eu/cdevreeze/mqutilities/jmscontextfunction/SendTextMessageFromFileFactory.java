@@ -16,8 +16,11 @@
 
 package eu.cdevreeze.mqutilities.jmscontextfunction;
 
+import eu.cdevreeze.mqutilities.JmsContextFunctionFactory;
 import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunctionFactory;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Typed;
+import jakarta.inject.Named;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -29,6 +32,8 @@ import java.util.Objects;
  * @author Chris de Vreeze
  */
 @ApplicationScoped
+@Named("SendTextMessageFromFile")
+@Typed({JmsContextToJsonObjectFunctionFactory.class, JmsContextFunctionFactory.class})
 public class SendTextMessageFromFileFactory implements JmsContextToJsonObjectFunctionFactory {
 
     @Override

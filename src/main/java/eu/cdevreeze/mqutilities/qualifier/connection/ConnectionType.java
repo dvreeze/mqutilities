@@ -18,18 +18,20 @@ package eu.cdevreeze.mqutilities.qualifier.connection;
 
 import jakarta.inject.Qualifier;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Arrays;
 
 /**
- * CDI {@link Qualifier} for {@link jakarta.jms.ConnectionFactory} instances that do not use SSL.
+ * Type of JMS connection, as used in {@link Qualifier} annotation {@link HasConnectionType}.
  *
  * @author Chris de Vreeze
  */
-@Qualifier
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface SimpleConnection {
+public enum ConnectionType {
+    SIMPLE, TWO_WAY_SSL;
+
+    public static ConnectionType parse(String s) {
+        return Arrays.stream(values())
+                .filter(v -> v.toString().equalsIgnoreCase(s))
+                .findFirst()
+                .orElseThrow();
+    }
 }

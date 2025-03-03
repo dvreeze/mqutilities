@@ -16,7 +16,8 @@
 
 package eu.cdevreeze.mqutilities.connection;
 
-import eu.cdevreeze.mqutilities.qualifier.connection.SSLConnection;
+import eu.cdevreeze.mqutilities.qualifier.connection.ConnectionType;
+import eu.cdevreeze.mqutilities.qualifier.connection.HasConnectionType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.jms.ConnectionFactory;
@@ -29,7 +30,7 @@ import jakarta.jms.ConnectionFactory;
 public class SSLConnectionFactories {
 
     @Produces
-    @SSLConnection
+    @HasConnectionType(ConnectionType.TWO_WAY_SSL)
     @ApplicationScoped
     public ConnectionFactory getConnectionFactory() {
         return new SSLConnectionFactorySupplier().get();

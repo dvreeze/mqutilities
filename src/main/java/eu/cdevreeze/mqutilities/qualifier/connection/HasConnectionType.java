@@ -24,12 +24,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * CDI {@link Qualifier} for {@link jakarta.jms.ConnectionFactory} instances that use 2-way SSL.
+ * CDI {@link Qualifier} for {@link jakarta.jms.ConnectionFactory} instances.
  *
  * @author Chris de Vreeze
  */
 @Qualifier
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SSLConnection {
+public @interface HasConnectionType {
+    ConnectionType value();
 }

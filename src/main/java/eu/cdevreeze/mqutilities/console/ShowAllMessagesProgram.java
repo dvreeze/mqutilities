@@ -17,7 +17,6 @@
 package eu.cdevreeze.mqutilities.console;
 
 import eu.cdevreeze.mqutilities.jmscontextfunction.ShowAllMessages;
-import eu.cdevreeze.mqutilities.jmscontextfunction.ShowAllMessagesFactory;
 
 import java.util.Objects;
 
@@ -35,7 +34,7 @@ public class ShowAllMessagesProgram {
         String queueName = args[0]; // e.g. DEV.QUEUE.1
 
         JmsProgramReturningXml.main(
-                ShowAllMessagesFactory.class.getCanonicalName(),
+                ShowAllMessages.class.getSimpleName(),
                 queueName
         );
     }

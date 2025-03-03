@@ -16,8 +16,11 @@
 
 package eu.cdevreeze.mqutilities.jmscontextfunction;
 
+import eu.cdevreeze.mqutilities.JmsContextFunctionFactory;
 import eu.cdevreeze.mqutilities.JmsContextToElementFunctionFactory;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Typed;
+import jakarta.inject.Named;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +31,8 @@ import java.util.Objects;
  * @author Chris de Vreeze
  */
 @ApplicationScoped
+@Named("ShowAllMessages")
+@Typed({JmsContextToElementFunctionFactory.class, JmsContextFunctionFactory.class})
 public class ShowAllMessagesFactory implements JmsContextToElementFunctionFactory {
 
     @Override

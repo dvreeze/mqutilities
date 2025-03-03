@@ -14,28 +14,24 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.mqutilities.console;
+package eu.cdevreeze.mqutilities.qualifier.connection;
 
-import eu.cdevreeze.mqutilities.jmscontextfunction.GetMessageCount;
-
-import java.util.Objects;
+import jakarta.enterprise.util.AnnotationLiteral;
 
 /**
- * Program that calls {@link GetMessageCount} and shows the result.
- * <p>
- * The only program argument is the queue name.
+ * Class that can be used to create an {@link HasConnectionType} annotation.
  *
  * @author Chris de Vreeze
  */
-public class GetMessageCountProgram {
+public class HasConnectionTypeQualifier extends AnnotationLiteral<HasConnectionType> implements HasConnectionType {
 
-    public static void main(String... args) throws Exception {
-        Objects.checkIndex(0, args.length);
-        String queueName = args[0]; // e.g. DEV.QUEUE.1
+    private final ConnectionType value;
 
-        JmsProgramReturningJson.main(
-                GetMessageCount.class.getSimpleName(),
-                queueName
-        );
+    public HasConnectionTypeQualifier(ConnectionType value) {
+        this.value = value;
+    }
+
+    public ConnectionType value() {
+        return value;
     }
 }

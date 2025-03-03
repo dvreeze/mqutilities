@@ -17,7 +17,6 @@
 package eu.cdevreeze.mqutilities.console;
 
 import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessageFromFile;
-import eu.cdevreeze.mqutilities.jmscontextfunction.SendTextMessageFromFileFactory;
 
 import java.nio.file.Path;
 import java.util.Objects;
@@ -37,7 +36,7 @@ public class SendTextMessageFromFileProgram {
         Path file = Path.of(args[1]);
 
         JmsProgramReturningJson.main(
-                SendTextMessageFromFileFactory.class.getCanonicalName(),
+                SendTextMessageFromFile.class.getSimpleName(),
                 queueName,
                 file.toString()
         );
