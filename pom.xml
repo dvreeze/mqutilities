@@ -5,7 +5,7 @@
 
     <groupId>eu.cdevreeze.mqutilities</groupId>
     <artifactId>mqutilities</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0-SNAPSHOT</version>
 
     <name>mqutilities</name>
     <url>https://github.com/dvreeze/mqutilities</url>
