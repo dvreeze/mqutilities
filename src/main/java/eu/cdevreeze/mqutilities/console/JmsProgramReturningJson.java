@@ -21,6 +21,7 @@ import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunction;
 import eu.cdevreeze.mqutilities.JmsContextToJsonObjectFunctionFactory;
 import eu.cdevreeze.mqutilities.qualifier.connection.ConnectionType;
 import eu.cdevreeze.mqutilities.qualifier.connection.HasConnectionTypeQualifier;
+import jakarta.enterprise.inject.Default;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.literal.NamedLiteral;
 import jakarta.enterprise.inject.spi.CDI;
@@ -32,7 +33,6 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
@@ -59,7 +59,14 @@ public class JmsProgramReturningJson {
         Weld weld = new Weld();
 
         try (WeldContainer weldContainer = weld.initialize()) {
-            Config config = ConfigProvider.getConfig();
+            Instance<Config> configInstance = CDI.current().select(Config.class, Default.Literal.INSTANCE);
+
+            Preconditions.checkArgument(
+                    configInstance.isResolvable(),
+                    String.format("Could not resolve Config with required qualifier '%s'", Default.Literal.INSTANCE)
+            );
+
+            Config config = configInstance.get();
 
             // Typically, system property "connectionType" has been passed to the program
             ConnectionType connectionType =

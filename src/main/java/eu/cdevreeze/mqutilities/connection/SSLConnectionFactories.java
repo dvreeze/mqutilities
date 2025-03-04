@@ -16,6 +16,7 @@
 
 package eu.cdevreeze.mqutilities.connection;
 
+import com.google.common.base.Preconditions;
 import com.ibm.msg.client.jakarta.jms.JmsConnectionFactory;
 import com.ibm.msg.client.jakarta.jms.JmsFactoryFactory;
 import com.ibm.msg.client.jakarta.wmq.WMQConstants;
@@ -28,9 +29,6 @@ import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSException;
 import jakarta.jms.JMSRuntimeException;
 import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
-
-import java.util.Objects;
 
 /**
  * CDI-injectable SSL-enabled JMS {@link ConnectionFactory}, using 2-way SSL.
@@ -43,10 +41,7 @@ public class SSLConnectionFactories {
     @Produces
     @HasConnectionType(ConnectionType.TWO_WAY_SSL)
     @ApplicationScoped
-    public ConnectionFactory getConnectionFactory() {
-        // Ugly!
-        Config config = ConfigProvider.getConfig();
-
+    public ConnectionFactory getConnectionFactory(Config config) {
         try {
             String jakartaWmqProviderName = WMQConstants.JAKARTA_WMQ_PROVIDER;
             JmsFactoryFactory jmsFactoryFactory = JmsFactoryFactory.getInstance(jakartaWmqProviderName);
@@ -60,20 +55,20 @@ public class SSLConnectionFactories {
             cf.setStringProperty(CommonConstants.WMQ_QUEUE_MANAGER, config.getValue("two_way_ssl.wmq_queue_manager", String.class));
             cf.setStringProperty(CommonConstants.WMQ_SSL_CIPHER_SUITE, config.getValue("two_way_ssl.wmq_ssl_cipher_suite", String.class));
 
-            Objects.requireNonNull(
-                    System.getProperty("javax.net.ssl.keyStore"),
+            Preconditions.checkArgument(
+                    config.getOptionalValue("javax.net.ssl.keyStore", String.class).isPresent(),
                     "Missing system property 'javax.net.ssl.keyStore'"
             );
-            Objects.requireNonNull(
-                    System.getProperty("javax.net.ssl.keyStorePassword"),
+            Preconditions.checkArgument(
+                    config.getOptionalValue("javax.net.ssl.keyStorePassword", String.class).isPresent(),
                     "Missing system property 'javax.net.ssl.keyStorePassword'"
             );
-            Objects.requireNonNull(
-                    System.getProperty("javax.net.ssl.trustStore"),
+            Preconditions.checkArgument(
+                    config.getOptionalValue("javax.net.ssl.trustStore", String.class).isPresent(),
                     "Missing system property 'javax.net.ssl.trustStore'"
             );
-            Objects.requireNonNull(
-                    System.getProperty("javax.net.ssl.trustStorePassword"),
+            Preconditions.checkArgument(
+                    config.getOptionalValue("javax.net.ssl.trustStorePassword", String.class).isPresent(),
                     "Missing system property 'javax.net.ssl.trustStorePassword'"
             );
 

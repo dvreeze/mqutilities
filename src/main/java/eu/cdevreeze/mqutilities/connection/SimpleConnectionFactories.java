@@ -28,7 +28,6 @@ import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSException;
 import jakarta.jms.JMSRuntimeException;
 import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
 
 /**
  * CDI-injectable "simple" JMS {@link ConnectionFactory}, using password authentication.
@@ -43,10 +42,7 @@ public class SimpleConnectionFactories {
     @Produces
     @HasConnectionType(ConnectionType.SIMPLE)
     @ApplicationScoped
-    public ConnectionFactory getConnectionFactory() {
-        // Ugly!
-        Config config = ConfigProvider.getConfig();
-
+    public ConnectionFactory getConnectionFactory(Config config) {
         try {
             String jakartaWmqProviderName = WMQConstants.JAKARTA_WMQ_PROVIDER;
             JmsFactoryFactory jmsFactoryFactory = JmsFactoryFactory.getInstance(jakartaWmqProviderName);
