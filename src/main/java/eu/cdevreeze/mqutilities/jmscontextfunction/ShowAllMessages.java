@@ -24,10 +24,7 @@ import eu.cdevreeze.yaidom4j.dom.immutabledom.Text;
 import jakarta.jms.*;
 
 import javax.xml.namespace.QName;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static eu.cdevreeze.yaidom4j.dom.immutabledom.Nodes.elem;
 
@@ -51,7 +48,16 @@ public class ShowAllMessages implements JmsContextToElementFunction {
     public Element apply(JMSContext jmsContext) {
         try (QueueBrowser queueBrowser = jmsContext.createBrowser(jmsContext.createQueue(queueName))) {
             @SuppressWarnings("unchecked")
-            List<Message> messages = Collections.list((Enumeration<Message>) queueBrowser.getEnumeration());
+            List<Message> messages = Collections.list((Enumeration<Message>) queueBrowser.getEnumeration())
+                    .stream()
+                    .sorted(Comparator.comparingLong((Message m) -> {
+                        try {
+                            return m.getJMSTimestamp();
+                        } catch (JMSException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).reversed())
+                    .toList();
 
             return elem(new QName("queueContent"))
                     .plusChild(elem(new QName("queue")).plusText(queueName))
